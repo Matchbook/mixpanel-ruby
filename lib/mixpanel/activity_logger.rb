@@ -11,11 +11,8 @@ module Mixpanel
     ENGAGE_ENDPOINT = "#{BASE_ENDPOINT}/engage/"
 
 
-    attr_accessor :logger
-
     def initialize( token )
       @token  = token
-      @logger = Logger.new("logs/#{ENV["RAKE_ENV"]}.log")
     end
 
 
@@ -167,10 +164,7 @@ module Mixpanel
         http.request(req)
       }
 
-      @logger.debug("SENT: #{uri}")
-      @logger.debug("RESP: #{res}")
       raise "Mixpanel error: #{url}" if !res.is_a? Net::HTTPSuccess
-
     end
   end
 end
