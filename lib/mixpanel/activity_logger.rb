@@ -126,7 +126,9 @@ module Mixpanel
     def send_people_request(action, props={})
       raise "Missing required attribute: distinct_id" if props[:distinct_id].nil?
 
-      data = {}
+      props = props.dup
+      data  = {}
+
       # split properties from people and from the base service
       BASE_PROPS.each {|k| data["$#{k}"] = props.delete(k) unless props[k].nil? }
 
