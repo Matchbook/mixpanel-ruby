@@ -66,7 +66,7 @@ module Mixpanel
     # username - The username of a given user
     # any other trackable people property to track
     #
-    def set_people(props={})
+    def set_user(props={})
       send_people_request("$set", props)
     end
 
