@@ -24,24 +24,24 @@ module Mixpanel
 
     # Required properties
     #
-    # name - event identifier
-    # distinct_id - any string that uniquely can identify a user.
+    # namespace - event identifier
+    # user_id - any string that uniquely can identify a user.
 
     # Optional properties
     #
     # time - time at which the event occured, it must be a unix timestamp.
     # ip - raw string IP Address (e.g. "127.0.0.1") that you pass to our API.
-    # mp_name_tag - set a name for a given user for our streams feature.
+    # mp_name_tag - set a namespace for a given user for our streams feature.
     #               (only supported for streams).
     #
     def track_event(props={})
-      raise "Missing required attribute: name" if props[:name].nil?
-      raise "Missing required attribute: distinct_id" if props[:distinct_id].nil?
+      raise "Missing required attribute: namespace" if props[:namespace].nil?
+      raise "Missing required attribute: user_id" if props[:user_id].nil?
 
-      name = props.delete :name
+      namespace = props.delete :namespace
       props[:token] = @token
 
-      encoded_props = encode({event: name, properties: props})
+      encoded_props = encode({event: namespace, properties: props})
       send_request("#{TRACK_ENDPOINT}?#{encoded_props}")
     end
 
@@ -54,7 +54,7 @@ module Mixpanel
 
     # Required properties
     #
-    # distinct_id - any string that uniquely can identify a user.
+    # user_id - any string that uniquely can identify a user.
 
     # Optional properties
     #
@@ -75,7 +75,7 @@ module Mixpanel
 
     # Required properties
     #
-    # distinct_id - any string that uniquely can identify a user.
+    # user_id - any string that uniquely can identify a user.
 
     # Optional properties
     #
@@ -96,7 +96,7 @@ module Mixpanel
 
     # Required properties
     #
-    # distinct_id - any string that uniquely can identify a user.
+    # user_id - any string that uniquely can identify a user.
 
     # Optional properties
     #
@@ -117,11 +117,11 @@ module Mixpanel
 
     protected
 
-    BASE_PROPS   = [:ip, :distinct_id]
+    BASE_PROPS   = [:ip, :user_id]
     PEOPLE_PROPS = [:email, :first_name, :last_name, :created, :username]
 
     def send_people_request(action, props={})
-      raise "Missing required attribute: distinct_id" if props[:distinct_id].nil?
+      raise "Missing required attribute: user_id" if props[:user_id].nil?
 
       props = props.dup
       data  = {}
