@@ -123,6 +123,8 @@ module Mixpanel
 
     def send_people_request(action, props={})
       raise "Missing required attribute: user_id" if props[:user_id].nil?
+      raise "Empty data" if props[:email].nil? || props[:first_name].nil? || props[:last_name].nil?
+      raise "Invalid user_id" if props[:user_id].empty? || props[:user_id] == 'UNDEFINED_USER'
 
       props[:distinct_id] = props.delete :user_id
       props = props.dup
