@@ -40,6 +40,7 @@ module Mixpanel
 
       namespace = props.delete :namespace
       props[:token] = @token
+      props[:time]  = props.delete :created_at unless props[:created_at].nil?
 
       encoded_props = encode({event: namespace, properties: props})
       send_request("#{TRACK_ENDPOINT}?#{encoded_props}")
