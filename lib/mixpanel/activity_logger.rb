@@ -127,6 +127,8 @@ module Mixpanel
       raise "Invalid user_id" if props[:user_id].empty? || props[:user_id] == 'UNDEFINED_USER'
 
       props[:distinct_id] = props.delete :user_id
+      props[:time] = props.delete :created_at unless props[:created_at].nil?
+
       props = props.dup
       data  = {}
 
