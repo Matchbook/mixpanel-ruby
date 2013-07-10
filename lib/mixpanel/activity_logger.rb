@@ -118,12 +118,13 @@ module Mixpanel
 
     protected
 
-    BASE_PROPS   = [:ip, :user_id]
+    BASE_PROPS   = [:ip, :distinct_id]
     PEOPLE_PROPS = [:email, :first_name, :last_name, :created, :username]
 
     def send_people_request(action, props={})
       raise "Missing required attribute: user_id" if props[:user_id].nil?
 
+      props[:distinct_id] = props.delete :user_id
       props = props.dup
       data  = {}
 
