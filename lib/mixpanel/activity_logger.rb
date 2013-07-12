@@ -40,7 +40,8 @@ module Mixpanel
 
       namespace = props.delete :namespace
       props[:token] = @token
-      props[:time]  = props.delete :created_at unless props[:created_at].nil?
+
+      cleanup! props
 
       encoded_props = encode({event: namespace, properties: props})
       send_request("#{TRACK_ENDPOINT}?#{encoded_props}")
@@ -121,13 +122,22 @@ module Mixpanel
     BASE_PROPS   = [:ip, :distinct_id]
     PEOPLE_PROPS = [:email, :first_name, :last_name, :created, :username]
 
+
+    # Removes and clean up attributes that we don't want to track or have chaged
+    # particular to mixpanel, but are being sent by older versions of the app.
+    #
+    def cleanup! properties
+      properties[:distinct_id] = properties.delete :user_id
+      properties[:time] = properties.delete :created_at unless properties[:created_at].nil?
+    end
+
+
     def send_people_request(action, props={})
       raise "Missing required attribute: user_id" if props[:user_id].nil?
       raise "Empty data" if props[:email].nil? || props[:first_name].nil? || props[:last_name].nil?
       raise "Invalid user_id" if props[:user_id].empty? || props[:user_id] == 'UNDEFINED_USER'
 
-      props[:distinct_id] = props.delete :user_id
-      props[:time] = props.delete :created_at unless props[:created_at].nil?
+      cleanup! props
 
       props = props.dup
       data  = {}
