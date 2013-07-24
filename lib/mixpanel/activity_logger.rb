@@ -9,10 +9,12 @@ module Mixpanel
     BASE_ENDPOINT   = 'http://api.mixpanel.com'
     TRACK_ENDPOINT  = "#{BASE_ENDPOINT}/track/"
     ENGAGE_ENDPOINT = "#{BASE_ENDPOINT}/engage/"
+    IMPORT_ENDPOINT = "#{BASE_ENDPOINT}/import/"
 
 
-    def initialize( token )
-      @token  = token
+    def initialize(token, key)
+      @token = token
+      @key   = key
     end
 
 
@@ -45,6 +47,25 @@ module Mixpanel
 
       encoded_props = encode({event: namespace, properties: props})
       send_request("#{TRACK_ENDPOINT}?#{encoded_props}")
+    end
+
+
+    # IMPORT
+    #
+    ###########################################################################
+
+    def import_event(props={})
+      raise "Missing required attribute: namespace" if props[:namespace].nil?
+      raise "Missing required attribute: user_id" if props[:user_id].nil?
+
+      namespace = props.delete :namespace
+      props[:token] = @token
+
+      cleanup! props
+
+      encoded_props = encode({event: namespace, properties: props})
+
+      send_request("#{IMPORT_ENDPOINT}?#{encoded_props}&api_key=#{@key}")
     end
 
 
@@ -139,6 +160,8 @@ module Mixpanel
 
       cleanup! props
 
+      props.delete :time
+
       props = props.dup
       data  = {}
 
@@ -180,6 +203,7 @@ module Mixpanel
         http.request(req)
       }
 
+      raise "Mixpanel error: response == 0 for request #{url}" if res.body == 0
       raise "Mixpanel error: #{url}" if !res.is_a? Net::HTTPSuccess
     end
   end
